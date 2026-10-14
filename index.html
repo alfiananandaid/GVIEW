@@ -2,221 +2,541 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem QR Ulasan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem QR Review iOS Modern</title>
+    <!-- Library QR Code CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --border: #e2e8f0; }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+        /* ==========================================
+           MODERN iOS DESIGN SYSTEM & RESPONSIVE CSS
+           ========================================== */
+        :root {
+            --ios-primary: #007aff;
+            --ios-primary-dark: #0056b3;
+            --ios-danger: #ff3b30;
+            --ios-success: #34c759;
+            --ios-bg: #f2f2f7;
+            --ios-card: rgba(255, 255, 255, 0.85);
+            --ios-text: #1c1c1e;
+            --ios-subtext: #8e8e93;
+            --ios-border: rgba(60, 60, 67, 0.12);
+            --ios-radius-lg: 20px;
+            --ios-radius-md: 14px;
+            --ios-radius-sm: 8px;
+            --ios-blur: blur(20px);
+            --ios-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* UTILITAS LAYOUT */
-        .flex-center { display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--ios-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* UTILITAS */
         .hidden { display: none !important; }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        
-        /* 1. LAYAR PELANGGAN (SCAN) */
-        .scan-card { background: var(--surface); width: 85%; max-width: 320px; border-radius: 20px; padding: 40px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .spinner { border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        .flex-center { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+
+        /* BUTTONS iOS STYLE */
+        .btn {
+            background: var(--ios-primary);
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--ios-radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn:active { transform: scale(0.97); opacity: 0.85; }
+        .btn-danger { background: var(--ios-danger); }
+        .btn-success { background: var(--ios-success); }
+        .btn-secondary { background: rgba(120, 120, 128, 0.16); color: var(--ios-text); }
+        .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: var(--ios-radius-sm); }
+
+        /* INPUTS iOS STYLE */
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--ios-subtext); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-control {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--ios-border);
+            border-radius: var(--ios-radius-md);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            color: var(--ios-text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-control:focus { border-color: var(--ios-primary); box-shadow: 0 0 0 3px rgba(0,122,255,0.2); }
+
+        /* 1. LAYAR SCAN PELANGGAN */
+        .scan-card {
+            background: var(--ios-card);
+            backdrop-filter: var(--ios-blur);
+            -webkit-backdrop-filter: var(--ios-blur);
+            width: 100%;
+            max-width: 360px;
+            border-radius: var(--ios-radius-lg);
+            padding: 40px 24px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid rgba(255,255,255,0.4);
+            text-align: center;
+        }
+        .spinner {
+            border: 3px solid rgba(0,122,255,0.15);
+            border-top-color: var(--ios-primary);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px auto;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .scan-card h2 { margin: 0 0 8px 0; font-size: 20px; }
-        .scan-card p { color: #64748b; font-size: 15px; margin: 0; }
-        .btn-fallback { display: none; margin-top: 15px; padding: 12px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; width:100%; }
 
         /* 2. LAYAR ADMIN LOGIN */
-        .login-box { background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 90%; max-width: 350px; text-align: left; }
-        .login-box h2 { margin-top: 0; text-align: center; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #64748b; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+        .login-card {
+            background: var(--ios-card);
+            backdrop-filter: var(--ios-blur);
+            width: 100%;
+            max-width: 380px;
+            border-radius: var(--ios-radius-lg);
+            padding: 36px 28px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid rgba(255,255,255,0.4);
+            text-align: center;
+        }
 
-        /* 3. LAYAR ADMIN DASHBOARD */
-        .navbar { background: var(--surface); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-wrap: wrap; gap:10px;}
-        .nav-menus button { background: none; border: none; color: #64748b; font-weight: bold; cursor: pointer; padding: 8px 15px; }
-        .nav-menus button.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-        .main-content { padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--surface); padding: 25px; border-radius: 12px; margin-bottom: 20px; overflow-x: auto; }
-        
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 600px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background: #f1f5f9; }
-        
-        /* MODAL QR */
-        #qr-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: flex; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; }
-        #qr-canvas { margin: 15px auto; border: 1px solid #eee; border-radius: 10px; display: block; }
-        .copy-box { display: flex; margin-bottom: 20px; }
-        .copy-box input { width: 100%; padding: 10px; border: 1px solid var(--border); background: #f8fafc; border-radius: 6px 0 0 6px; }
-        .copy-box button { background: var(--text); color: white; border: none; padding: 10px 15px; border-radius: 0 6px 6px 0; font-weight: bold; cursor:pointer;}
-        
-        /* TABS */
-        .page { display: none; }
-        .page.active { display: block; }
+        /* 3. DASHBOARD NAVBAR & CONTENT */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: var(--ios-blur);
+            -webkit-backdrop-filter: var(--ios-blur);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--ios-border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .navbar-brand { font-size: 20px; font-weight: 700; color: var(--ios-primary); letter-spacing: -0.5px; }
+        .nav-tabs { display: flex; gap: 8px; background: rgba(118, 118, 128, 0.12); padding: 3px; border-radius: var(--ios-radius-md); }
+        .nav-tab {
+            border: none;
+            background: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ios-subtext);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-tab.active { background: #ffffff; color: var(--ios-text); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; width: 100%; }
+
+        .card {
+            background: var(--ios-card);
+            backdrop-filter: var(--ios-blur);
+            border-radius: var(--ios-radius-lg);
+            padding: 24px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid rgba(255,255,255,0.4);
+            margin-bottom: 24px;
+        }
+
+        /* TOOLBAR & SEARCH BAR */
+        .action-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .search-box { flex: 1; min-width: 240px; position: relative; }
+        .search-box input { padding-left: 38px; }
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.5;
+        }
+
+        /* TABEL RESPONSIVE */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: var(--ios-radius-md); border: 1px solid var(--ios-border); }
+        table { width: 100%; border-collapse: collapse; min-width: 650px; background: #ffffff; }
+        th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--ios-border); font-size: 14px; }
+        th { background: #f9f9fb; font-weight: 600; color: var(--ios-subtext); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: rgba(0,122,255,0.02); }
+
+        /* MODAL POP-UP iOS NATIVE */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 22px;
+            padding: 28px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+
+        /* CHECKBOX CUSTOM iOS */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--ios-primary);
+            cursor: pointer;
+        }
+
+        /* RESPONSIVE MEDIA QUERIES */
+        @media (max-width: 768px) {
+            .navbar { padding: 12px 16px; }
+            .card { padding: 16px; }
+            .grid-form { grid-template-columns: 1fr !important; }
+            .action-toolbar { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- 1. VIEW PELANGGAN (SCAN) -->
+    <!-- 1. VIEW PELANGGAN (AUTO SCAN REDIRECT) -->
     <div id="view-scan" class="flex-center hidden">
         <div class="scan-card">
             <div class="spinner" id="loading-spinner"></div>
-            <h2 id="scan-title">Mohon Tunggu...</h2>
-            <p id="scan-subtitle">Memeriksa kode QR</p>
-            <a href="#" target="_top" class="btn-fallback" id="fallback-btn">Buka Halaman Ulasan</a>
+            <h2 id="scan-title" style="margin:0 0 8px 0;">Mohon Tunggu...</h2>
+            <p id="scan-subtitle">Memeriksa kode QR toko</p>
+            <a href="#" target="_top" class="btn btn-primary" id="fallback-btn" style="display:none; margin-top:20px; width:100%;">Buka Ulasan Google</a>
         </div>
     </div>
 
     <!-- 2. VIEW ADMIN LOGIN -->
     <div id="view-login" class="flex-center hidden">
-        <div class="login-box">
-            <h2>Admin Login</h2>
-            <div class="input-group"><label>Username</label><input type="text" id="username"></div>
-            <div class="input-group"><label>Password</label><input type="password" id="password"></div>
-            <button class="btn" style="width:100%" onclick="doLogin()" id="btn-login">Login</button>
-            <p id="login-msg" style="color:red; font-size: 13px; display:none; margin-top:10px; text-align:center;"></p>
+        <div class="login-card">
+            <h2 style="margin-top:0; font-size:24px; font-weight:700;">Admin Login</h2>
+            <p style="color:var(--ios-subtext); font-size:14px; margin-bottom:24px;">Masuk untuk mengelola QR & Ulasan</p>
+            
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" class="input-control" placeholder="admin" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" class="input-control" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
+            </div>
+            <button class="btn" style="width:100%; padding:14px;" onclick="doLogin()" id="btn-login">Login</button>
+            <p id="login-msg" style="color:var(--ios-danger); font-size:13px; display:none; margin-top:14px;"></p>
         </div>
     </div>
 
     <!-- 3. VIEW ADMIN DASHBOARD -->
     <div id="view-dashboard" class="hidden">
         <div class="navbar">
-            <h2 style="margin:0; color:var(--primary);">QR Reviews</h2>
-            <div class="nav-menus">
-                <button class="active" onclick="switchTab('tab-qr', this)">Kelola QR</button>
-                <button onclick="switchTab('tab-log', this)">Log Aktivitas</button>
-                <button onclick="logout()">Logout</button>
+            <div class="navbar-brand">📱 Review QR Manager</div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('tab-qr', this)">Kelola QR</button>
+                <button class="nav-tab" onclick="switchTab('tab-log', this)">Log Scan</button>
             </div>
+            <button class="btn btn-secondary btn-sm" onclick="logout()">Keluar</button>
         </div>
 
-        <div class="main-content">
-            <!-- TAB: KELOLA QR -->
-            <div id="tab-qr" class="page active">
+        <div class="container">
+            <!-- TAB 1: KELOLA QR -->
+            <div id="tab-qr" class="page-view">
+                <!-- FORM TAMBAH TOKO -->
                 <div class="card">
-                    <h3 style="margin-top:0;">Buat QR Baru</h3>
-                    <div class="grid-form">
-                        <div class="input-group" style="margin:0;"><label>Kode Toko</label><input type="text" id="add-id" placeholder="T391"></div>
-                        <div class="input-group" style="margin:0;"><label>Nama Toko</label><input type="text" id="add-name" placeholder="Kopi Senja"></div>
-                        <div class="input-group" style="margin:0;"><label>URL Ulasan</label><input type="text" id="add-url" placeholder="https://..."></div>
-                        <button class="btn" id="btn-add" onclick="addStore()">Simpan Data</button>
+                    <h3 style="margin-top:0; margin-bottom:16px;">Tambah Toko Baru</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr 2fr auto; gap:12px; align-items:end;" class="grid-form">
+                        <div class="input-group" style="margin:0;">
+                            <label>Kode Toko</label>
+                            <input type="text" id="add-id" class="input-control" placeholder="T391" onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <div class="input-group" style="margin:0;">
+                            <label>Nama Toko</label>
+                            <input type="text" id="add-name" class="input-control" placeholder="Kopi Senja" onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <div class="input-group" style="margin:0;">
+                            <label>URL Ulasan Google Maps</label>
+                            <input type="text" id="add-url" class="input-control" placeholder="https://search.google.com/..." onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <button class="btn" id="btn-add" onclick="addStore()">Simpan</button>
                     </div>
                 </div>
 
+                <!-- DAFTAR TOKO & MULTI ACTIONS -->
                 <div class="card">
-                    <h3 style="margin-top:0;">Daftar Toko & QR Code</h3>
-                    <table>
-                        <thead><tr><th>Kode QR</th><th>Nama Toko</th><th>URL Tujuan</th><th>Dibuat</th><th>Aksi</th></tr></thead>
-                        <tbody id="table-store"><tr><td colspan="5">Memuat data...</td></tr></tbody>
-                    </table>
+                    <div class="action-toolbar">
+                        <div class="search-box">
+                            <input type="text" id="search-input" class="input-control" placeholder="Cari Kode Toko atau Nama..." onkeyup="filterStores()">
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadTemplateCSV()">📥 Template CSV</button>
+                            <button class="btn btn-secondary btn-sm" onclick="openImportModal()">📤 Import CSV</button>
+                            <button class="btn btn-danger btn-sm hidden" id="btn-multi-delete" onclick="deleteSelectedStores()">🗑️ Hapus Terpilih (<span id="select-count">0</span>)</button>
+                            <button class="btn btn-success btn-sm hidden" id="btn-multi-download" onclick="downloadSelectedQRs()">⬇️ Download QR (<span id="select-count-dl">0</span>)</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;"><input type="checkbox" id="check-all" onclick="toggleSelectAll(this)"></th>
+                                    <th>Kode QR</th>
+                                    <th>Nama Toko</th>
+                                    <th>URL Google Review</th>
+                                    <th>Tanggal</th>
+                                    <th style="text-align:center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-store">
+                                <tr><td colspan="6" style="text-align:center; color:var(--ios-subtext);">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- TAB: LOG AKTIVITAS -->
-            <div id="tab-log" class="page">
+            <!-- TAB 2: LOG AKTIVITAS -->
+            <div id="tab-log" class="page-view hidden">
                 <div class="card">
-                    <h3 style="margin-top:0;">Aktivitas Scan (100 Terakhir)</h3>
-                    <table>
-                        <thead><tr><th>Waktu Scan</th><th>Kode QR</th><th>Nama Toko</th><th>Status</th></tr></thead>
-                        <tbody id="table-log"><tr><td colspan="4">Memuat log...</td></tr></tbody>
-                    </table>
+                    <h3 style="margin-top:0;">Log Aktivitas Scan Real-time</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Waktu Scan</th>
+                                    <th>Kode QR</th>
+                                    <th>Nama Toko</th>
+                                    <th>Status Redirect</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-log">
+                                <tr><td colspan="4" style="text-align:center;">Memuat log...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL QR -->
-    <div id="qr-modal" class="hidden">
-        <div class="modal-content">
-            <h3 id="modal-title" style="margin-top:0;"></h3>
-            <canvas id="qr-canvas" width="300" height="300"></canvas>
-            <div class="copy-box">
-                <input type="text" id="qr-url-input" readonly>
-                <button onclick="copyUrl()" id="btn-copy">Copy</button>
+    <!-- MODAL POP-UP: TAMPIL QR & COPY -->
+    <div id="modal-qr" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="modal-qr-title" style="margin-top:0; font-size:20px;">QR Code Toko</h3>
+            
+            <canvas id="qr-canvas" style="margin:16px auto; border-radius:12px;"></canvas>
+            
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <input type="text" id="qr-url-input" class="input-control" style="font-size:12px; background:#f0f0f2;" readonly>
+                <button class="btn btn-secondary" onclick="copyUrl()" id="btn-copy">Copy</button>
             </div>
-            <button class="btn" style="width:100%; margin-bottom:10px;" onclick="downloadQR()">Download QR (PNG)</button>
-            <button class="btn" style="width:100%; background:white; color:var(--text); border:1px solid var(--border);" onclick="document.getElementById('qr-modal').classList.add('hidden')">Tutup</button>
+            
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn" onclick="downloadSingleQR()">⬇️ Download PNG</button>
+                <button class="btn btn-secondary" onclick="closeModal('modal-qr')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP: EDIT TOKO -->
+    <div id="modal-edit" class="modal-overlay">
+        <div class="modal-card" style="text-align:left;">
+            <h3 style="margin-top:0; text-align:center;">Edit Data Toko</h3>
+            <input type="hidden" id="edit-old-id">
+            
+            <div class="input-group">
+                <label>Kode Toko</label>
+                <input type="text" id="edit-id" class="input-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            <div class="input-group">
+                <label>Nama Toko</label>
+                <input type="text" id="edit-name" class="input-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            <div class="input-group">
+                <label>URL Google Maps Review</label>
+                <input type="text" id="edit-url" class="input-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            
+            <div style="display:flex; gap:8px; margin-top:20px;">
+                <button class="btn" style="flex:1;" onclick="submitEditStore()">Simpan Perubahan</button>
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-edit')">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP: IMPORT CSV -->
+    <div id="modal-import" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="margin-top:0;">Import Data CSV</h3>
+            <p style="font-size:13px; color:var(--ios-subtext); margin-bottom:16px;">Upload file CSV sesuai format template (`store_id`, `store_name`, `review_url`).</p>
+            
+            <input type="file" id="import-file-input" accept=".csv, .txt" class="input-control" style="padding:10px; margin-bottom:16px;">
+            
+            <div style="display:flex; gap:8px;">
+                <button class="btn" style="flex:1;" onclick="processImportFile()">Upload & Import</button>
+                <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-import')">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ALERT NOTIFIKASI GENERAL -->
+    <div id="modal-alert" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="alert-title" style="margin-top:0;">Informasi</h3>
+            <p id="alert-msg" style="color:var(--ios-subtext); font-size:15px; margin-bottom:20px;"></p>
+            <button class="btn" style="width:100%;" onclick="closeModal('modal-alert')">OK</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 1. GANTI DENGAN URL API APPS SCRIPT ANDA
+        // CONFIGURATION & SESSION MANAGEMENT
         // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbzoKueW1LE_ramUtOsjT9Zk67FjdcVrjc001iAq4dIhb05u1cbwA_WzTFfuTR3LIz47ag/exec"; 
+        // ⚠️ GANTI LINK DI BAWAH INI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycbzr_tCuMvXyjIsTP45HRvkM6o0B8ci47q74RCytuFeEWA-Vsi8tC5RKYEZYR_e_KH-Bog/exec"; 
         
-        // BASE URL (Url Github Anda tanpa parameter)
         const BASE_URL = window.location.href.split('?')[0]; 
-        
-        let currentStoreId = "";
+        const SESSION_KEY = "ios_qr_review_session_12h";
+        const SESSION_DURATION_MS = 12 * 60 * 60 * 1000; // 12 JAM
 
-        // ==========================================
-        // 2. SISTEM ROUTING (Deteksi Buka Admin / Pelanggan)
-        // ==========================================
-        const urlParams = new URLSearchParams(window.location.search);
-        const storeId = urlParams.get('store');
+        let allStoresData = [];
+        let selectedStoreIds = new Set();
+        let currentActiveStore = null;
 
-        if (storeId) {
-            // JIKA ADA PARAMETER STORE = TAMPILKAN LAYAR PELANGGAN
-            document.getElementById('view-scan').classList.remove('hidden');
-            processCustomerScan(storeId);
-        } else {
-            // JIKA TIDAK ADA PARAMETER = TAMPILKAN LAYAR ADMIN
-            if(sessionStorage.getItem('isLogged')) {
-                document.getElementById('view-dashboard').classList.remove('hidden');
-                loadData();
+        // INIT ROUTER & SESSION CHECK
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('store');
+
+            if (storeId) {
+                // MODES PELANGGAN (SCAN QR)
+                document.getElementById('view-scan').classList.remove('hidden');
+                processCustomerScan(storeId);
             } else {
-                document.getElementById('view-login').classList.remove('hidden');
+                // MODES ADMIN
+                if (isSessionValid()) {
+                    document.getElementById('view-dashboard').classList.remove('hidden');
+                    loadData();
+                } else {
+                    document.getElementById('view-login').classList.remove('hidden');
+                }
             }
+        });
+
+        // CEK SESI 12 JAM
+        function isSessionValid() {
+            const raw = localStorage.getItem(SESSION_KEY);
+            if (!raw) return false;
+            try {
+                const session = JSON.parse(raw);
+                if (session.loggedIn && session.expiresAt && Date.now() < session.expiresAt) {
+                    return true;
+                }
+            } catch(e) {}
+            localStorage.removeItem(SESSION_KEY);
+            return false;
+        }
+
+        function saveSession() {
+            const session = { loggedIn: true, expiresAt: Date.now() + SESSION_DURATION_MS };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         }
 
         // ==========================================
-        // 3. FUNGSI PELANGGAN (AUTO-REDIRECT)
+        // SCANNER (PELANGGAN)
         // ==========================================
         function processCustomerScan(id) {
-            fetch(`${API_URL}?action=scan&store=${id}`)
+            fetch(`${API_URL}?action=scan&store=${encodeURIComponent(id)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
                         document.getElementById('scan-title').innerText = data.name;
-                        document.getElementById('scan-subtitle').innerText = "Mengarahkan ke Google Ulasan...";
+                        document.getElementById('scan-subtitle').innerText = "Mengarahkan ke Google Review...";
                         document.getElementById('fallback-btn').href = data.url;
                         
                         setTimeout(() => { 
                             try { window.top.location.replace(data.url); } 
                             catch(e) { window.location.replace(data.url); }
-                        }, 500);
+                        }, 400);
 
                         setTimeout(() => {
                             document.getElementById('loading-spinner').classList.add('hidden');
-                            document.getElementById('scan-subtitle').innerText = "Klik tombol di bawah ini untuk melanjutkan.";
-                            document.getElementById('fallback-btn').style.display = 'block';
-                        }, 2500);
-                        
+                            document.getElementById('scan-subtitle').innerText = "Jika tidak berpindah otomatis, klik tombol di bawah:";
+                            document.getElementById('fallback-btn').style.display = 'inline-block';
+                        }, 2200);
                     } else {
                         document.getElementById('loading-spinner').classList.add('hidden');
                         document.getElementById('scan-title').innerText = "Oops!";
-                        document.getElementById('scan-subtitle').innerHTML = `<span style="color:red">Toko tidak ditemukan.</span>`;
+                        document.getElementById('scan-subtitle').innerHTML = `<span style="color:var(--ios-danger);">${data.message || 'Toko tidak ditemukan'}</span>`;
                     }
                 }).catch(() => {
+                    document.getElementById('loading-spinner').classList.add('hidden');
                     document.getElementById('scan-title').innerText = "Oops!";
                     document.getElementById('scan-subtitle').innerText = "Gagal terhubung ke server.";
                 });
         }
 
         // ==========================================
-        // 4. FUNGSI ADMIN (LOGIN & DASHBOARD)
+        // ADMIN LOGIN & TABS
         // ==========================================
         function doLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
             const btn = document.getElementById('btn-login');
+            
+            if(!u || !p) return showIosAlert("Peringatan", "Username dan Password wajib diisi!");
             btn.innerText = "Memeriksa...";
             
-            fetch(`${API_URL}?action=login&user=${u}&pass=${p}`)
+            fetch(`${API_URL}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`)
                 .then(res => res.json())
                 .then(data => {
                     if(data.success) {
-                        sessionStorage.setItem('isLogged', 'true');
+                        saveSession();
                         document.getElementById('view-login').classList.add('hidden');
                         document.getElementById('view-dashboard').classList.remove('hidden');
                         loadData();
@@ -229,109 +549,406 @@
         }
 
         function logout() {
-            sessionStorage.removeItem('isLogged');
+            localStorage.removeItem(SESSION_KEY);
             window.location.reload();
         }
 
-        function switchTab(pageId, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-menus button').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
             btn.classList.add('active');
-            if(pageId === 'tab-log') loadLogs();
+            if(tabId === 'tab-log') loadLogs();
         }
 
+        // ==========================================
+        // LOAD DATA & FILTERING
+        // ==========================================
         function loadData() {
-            fetch(`${API_URL}?action=get_data`).then(res => res.json()).then(res => {
-                const tbody = document.getElementById('table-store');
-                tbody.innerHTML = res.data.length ? '' : '<tr><td colspan="5">Belum ada data.</td></tr>';
-                res.data.forEach(item => {
-                    tbody.innerHTML += `<tr>
-                        <td><strong>${item.id}</strong></td><td>${item.name}</td>
-                        <td><a href="${item.url}" target="_blank" style="font-size:12px; color:blue;">Link Google Maps</a></td>
-                        <td>${item.date}</td>
-                        <td><button class="btn" style="padding:6px; font-size:12px;" onclick="showQR('${item.id}', '${item.name}')">Lihat QR</button></td>
-                    </tr>`;
+            fetch(`${API_URL}?action=get_data`)
+                .then(res => res.json())
+                .then(res => {
+                    if(res.success) {
+                        allStoresData = res.data;
+                        renderTable(allStoresData);
+                    }
                 });
+        }
+
+        function renderTable(dataList) {
+            const tbody = document.getElementById('table-store');
+            tbody.innerHTML = '';
+            selectedStoreIds.clear();
+            updateMultiSelectUI();
+            
+            if(!dataList || dataList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--ios-subtext);">Tidak ada data toko ditemukan.</td></tr>';
+                return;
+            }
+
+            dataList.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="checkbox" class="store-checkbox" value="${item.id}" onchange="toggleSelectStore('${item.id}', this.checked)"></td>
+                        <td><strong>${item.id}</strong></td>
+                        <td>${item.name}</td>
+                        <td><a href="${item.url}" target="_blank" style="color:var(--ios-primary); font-size:12px; text-decoration:none;">Buka Link ↗</a></td>
+                        <td>${item.date}</td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-sm" onclick="showQR('${item.id}')">Lihat QR</button>
+                            <button class="btn btn-secondary btn-sm" onclick="openEditModal('${item.id}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteSingleStore('${item.id}')">Hapus</button>
+                        </td>
+                    </tr>
+                `;
             });
+        }
+
+        function filterStores() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const filtered = allStoresData.filter(s => 
+                s.id.toLowerCase().includes(query) || 
+                s.name.toLowerCase().includes(query) ||
+                s.url.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
         }
 
         function loadLogs() {
             fetch(`${API_URL}?action=get_logs`).then(res => res.json()).then(res => {
                 const tbody = document.getElementById('table-log');
-                tbody.innerHTML = res.data.length ? '' : '<tr><td colspan="4">Belum ada aktivitas.</td></tr>';
+                tbody.innerHTML = '';
+                if(!res.data || res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada log scan.</td></tr>';
+                    return;
+                }
                 res.data.forEach(item => {
-                    tbody.innerHTML += `<tr><td>${item.time}</td><td><strong>${item.id}</strong></td><td>${item.name}</td><td>${item.status}</td></tr>`;
+                    const isSuccess = item.status.includes('Berhasil');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.time}</td>
+                            <td><strong>${item.id}</strong></td>
+                            <td>${item.name}</td>
+                            <td><span style="color:${isSuccess?'var(--ios-success)':'var(--ios-danger)'}; font-weight:600;">${item.status}</span></td>
+                        </tr>
+                    `;
                 });
             });
         }
 
+        // ==========================================
+        // TAMBAH & EDIT TOKO
+        // ==========================================
         function addStore() {
             const id = document.getElementById('add-id').value.trim();
             const name = document.getElementById('add-name').value.trim();
             const url = document.getElementById('add-url').value.trim();
-            if(!id || !name || !url) return alert("Semua kolom wajib diisi!");
+            
+            if(!id || !name || !url) return showIosAlert("Peringatan", "Semua kolom form harus diisi!");
             
             document.getElementById('btn-add').innerText = "Menyimpan...";
             fetch(`${API_URL}?action=add_store&id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
-                .then(res => res.json()).then(data => {
-                    alert(data.message);
+                .then(res => res.json())
+                .then(data => {
+                    showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
                     if(data.success) {
                         document.getElementById('add-id').value = '';
                         document.getElementById('add-name').value = '';
                         document.getElementById('add-url').value = '';
                         loadData();
                     }
-                    document.getElementById('btn-add').innerText = "Simpan Data";
+                    document.getElementById('btn-add').innerText = "Simpan";
+                });
+        }
+
+        function openEditModal(storeId) {
+            const store = allStoresData.find(s => s.id === storeId);
+            if(!store) return;
+            
+            document.getElementById('edit-old-id').value = store.id;
+            document.getElementById('edit-id').value = store.id;
+            document.getElementById('edit-name').value = store.name;
+            document.getElementById('edit-url').value = store.url;
+            
+            openModal('modal-edit');
+        }
+
+        function submitEditStore() {
+            const oldId = document.getElementById('edit-old-id').value;
+            const newId = document.getElementById('edit-id').value.trim();
+            const name = document.getElementById('edit-name').value.trim();
+            const url = document.getElementById('edit-url').value.trim();
+
+            if(!newId || !name || !url) return showIosAlert("Peringatan", "Semua field tidak boleh kosong!");
+
+            fetch(`${API_URL}?action=edit_store&old_id=${encodeURIComponent(oldId)}&new_id=${encodeURIComponent(newId)}&name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
+                .then(res => res.json())
+                .then(data => {
+                    closeModal('modal-edit');
+                    showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
+                    if(data.success) loadData();
                 });
         }
 
         // ==========================================
-        // 5. FUNGSI GENERATE QR, COPY, DAN DOWNLOAD
+        // MULTI SELECT & MULTI DELETE
         // ==========================================
-        async function showQR(storeId, storeName) {
-            document.getElementById('qr-modal').classList.remove('hidden');
-            document.getElementById('modal-title').innerText = storeName + " (" + storeId + ")";
-            currentStoreId = storeId;
+        function toggleSelectStore(id, checked) {
+            if(checked) selectedStoreIds.add(id);
+            else selectedStoreIds.delete(id);
+            updateMultiSelectUI();
+        }
+
+        function toggleSelectAll(masterCb) {
+            const checkboxes = document.querySelectorAll('.store-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = masterCb.checked;
+                if(masterCb.checked) selectedStoreIds.add(cb.value);
+                else selectedStoreIds.delete(cb.value);
+            });
+            updateMultiSelectUI();
+        }
+
+        function updateMultiSelectUI() {
+            const count = selectedStoreIds.size;
+            document.getElementById('select-count').innerText = count;
+            document.getElementById('select-count-dl').innerText = count;
             
-            // LINK DINAMIS (Mengarah ke file index ini sendiri + ?store=ID)
-            const finalUrl = `${BASE_URL}?store=${storeId}`;
+            if(count > 0) {
+                document.getElementById('btn-multi-delete').classList.remove('hidden');
+                document.getElementById('btn-multi-download').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-multi-delete').classList.add('hidden');
+                document.getElementById('btn-multi-download').classList.add('hidden');
+            }
+        }
+
+        function deleteSingleStore(id) {
+            if(confirm(`Apakah Anda yakin ingin menghapus toko ${id}?`)) {
+                executeDelete([id]);
+            }
+        }
+
+        function deleteSelectedStores() {
+            const ids = Array.from(selectedStoreIds);
+            if(ids.length === 0) return;
+            if(confirm(`Apakah Anda yakin ingin menghapus ${ids.length} toko yang dipilih?`)) {
+                executeDelete(ids);
+            }
+        }
+
+        function executeDelete(ids) {
+            fetch(`${API_URL}?action=delete_stores&ids=${encodeURIComponent(JSON.stringify(ids))}`)
+                .then(res => res.json())
+                .then(data => {
+                    showIosAlert("Hasil Hapus", data.message);
+                    if(data.success) loadData();
+                });
+        }
+
+        // ==========================================
+        // GENERATE QR & MULTI DOWNLOAD (TEXT HITAM)
+        // ==========================================
+        async function showQR(storeId) {
+            const store = allStoresData.find(s => s.id === storeId);
+            if(!store) return;
+            
+            currentActiveStore = store;
+            document.getElementById('modal-qr-title').innerText = `${store.name} (${store.id})`;
+            
+            const finalUrl = `${BASE_URL}?store=${store.id}`;
             document.getElementById('qr-url-input').value = finalUrl;
             
             const canvas = document.getElementById('qr-canvas');
+            await renderQRCodeToCanvas(canvas, finalUrl, store.id);
+
+            openModal('modal-qr');
+        }
+
+        // CORE UTILITY UNTUK RENDER QR DENGAN TEKS HITAM DI TENGAH
+        async function renderQRCodeToCanvas(canvas, url, textCode) {
             const ctx = canvas.getContext('2d');
-            
-            await QRCode.toCanvas(canvas, finalUrl, {
-                width: 250, margin: 2, color: { dark: '#000000', light: '#ffffff' }, errorCorrectionLevel: 'H' 
+            await QRCode.toCanvas(canvas, url, {
+                width: 280,
+                margin: 2,
+                color: { dark: '#000000', light: '#ffffff' },
+                errorCorrectionLevel: 'H' 
             });
 
-            // Gambar teks di tengah QR
             const center = canvas.width / 2;
-            ctx.fillStyle = 'white';
-            ctx.fillRect(center - 35, center - 15, 70, 30);
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#2563eb';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(center - 45, center - 18, 90, 36);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.strokeRect(center - 45, center - 18, 90, 36);
+
+            // TULISAN KODE TOKO WARNA HITAM!
+            ctx.font = 'bold 16px -apple-system, SF Pro Display, Arial';
+            ctx.fillStyle = '#000000'; // WARNA HITAM
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(storeId, center, center);
+            ctx.fillText(textCode, center, center);
+        }
+
+        function downloadSingleQR() {
+            if(!currentActiveStore) return;
+            const canvas = document.getElementById('qr-canvas');
+            const a = document.createElement('a');
+            a.download = `${currentActiveStore.id}.png`;
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+        }
+
+        async function downloadSelectedQRs() {
+            if (selectedStoreIds.size === 0) return;
+            
+            showIosAlert("Downloading...", `Memproses ${selectedStoreIds.size} file QR Code...`);
+            const items = allStoresData.filter(s => selectedStoreIds.has(s.id));
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 300;
+                tempCanvas.height = 300;
+                
+                const finalUrl = `${BASE_URL}?store=${item.id}`;
+                await renderQRCodeToCanvas(tempCanvas, finalUrl, item.id);
+                
+                const a = document.createElement('a');
+                a.download = `${item.id}.png`;
+                a.href = tempCanvas.toDataURL('image/png');
+                a.click();
+                
+                // Jeda 350ms agar browser tidak memblokir multiple download
+                await new Promise(r => setTimeout(r, 350));
+            }
         }
 
         function copyUrl() {
-            const urlInput = document.getElementById('qr-url-input');
-            urlInput.select();
-            navigator.clipboard.writeText(urlInput.value).then(() => {
+            const input = document.getElementById('qr-url-input');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
                 const btn = document.getElementById('btn-copy');
                 btn.innerText = "Tersalin!";
-                btn.style.background = "#166534";
-                setTimeout(() => { btn.innerText = "Copy"; btn.style.background = "var(--text)"; }, 2000);
+                setTimeout(() => btn.innerText = "Copy", 2000);
             });
         }
 
-        function downloadQR() {
-            const link = document.createElement('a');
-            link.download = `${currentStoreId}.png`;
-            link.href = document.getElementById('qr-canvas').toDataURL('image/png');
-            link.click();
+        // ==========================================
+        // IMPORT CSV & TEMPLATE DOWNLOAD
+        // ==========================================
+        function downloadTemplateCSV() {
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "store_id,store_name,review_url\n"
+                + "T392,Toko Cabang Barat,https://search.google.com/local/writereview?placeid=ChIJ123456\n"
+                + "T393,Toko Cabang Timur,https://search.google.com/local/writereview?placeid=ChIJ789012\n";
+            
+            const encodedUri = encodeURI(csvContent);
+            const a = document.createElement('a');
+            a.setAttribute('href', encodedUri);
+            a.setAttribute('download', 'template_import_toko.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function openImportModal() {
+            document.getElementById('import-file-input').value = '';
+            openModal('modal-import');
+        }
+
+        function processImportFile() {
+            const fileInput = document.getElementById('import-file-input');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return showIosAlert("Peringatan", "Silakan pilih file CSV terlebih dahulu!");
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
+
+                if (lines.length < 2) {
+                    return showIosAlert("Ditolak!", "File CSV kosong atau tidak memiliki baris data!");
+                }
+
+                // VALIDASI HEADER STRICT
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^["']|["']\$/g, ''));
+                const requiredHeaders = ['store_id', 'store_name', 'review_url'];
+
+                const isValidHeader = requiredHeaders.every(req => headers.includes(req));
+
+                if (!isValidHeader) {
+                    return showIosAlert("Format Ditolak!", "Header CSV tidak sesuai template! Wajib memiliki kolom: store_id, store_name, review_url.");
+                }
+
+                const idIdx = headers.indexOf('store_id');
+                const nameIdx = headers.indexOf('store_name');
+                const urlIdx = headers.indexOf('review_url');
+
+                const payload = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = parseCSVLine(lines[i]);
+                    if (cols.length >= 3) {
+                        const store_id = cols[idIdx] ? cols[idIdx].trim() : '';
+                        const store_name = cols[nameIdx] ? cols[nameIdx].trim() : '';
+                        const review_url = cols[urlIdx] ? cols[urlIdx].trim() : '';
+
+                        if (store_id && store_name && review_url) {
+                            payload.push({ store_id, store_name, review_url });
+                        }
+                    }
+                }
+
+                if (payload.length === 0) {
+                    return showIosAlert("Ditolak!", "Tidak ada baris data valid yang dapat diimpor.");
+                }
+
+                closeModal('modal-import');
+                showIosAlert("Mengimpor", `Mengirim ${payload.length} data ke database...`);
+
+                fetch(`${API_URL}?action=import_stores&payload=${encodeURIComponent(JSON.stringify(payload))}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
+                        if(data.success) loadData();
+                    })
+                    .catch(() => showIosAlert("Error", "Terjadi kesalahan server saat impor."));
+            };
+
+            reader.readAsText(file);
+        }
+
+        function parseCSVLine(text) {
+            let p = '', c = '', r = [];
+            let q = false;
+            for (let i = 0; i < text.length; i++) {
+                c = text[i];
+                if (c === '"') { q = !q; } 
+                else if (c === ',' && !q) { r.push(p.trim().replace(/^["']|["']\$/g, '')); p = ''; } 
+                else { p += c; }
+            }
+            r.push(p.trim().replace(/^["']|["']\$/g, ''));
+            return r;
+        }
+
+        // ==========================================
+        // MODAL HELPERS
+        // ==========================================
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showIosAlert(title, msg) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            openModal('modal-alert');
         }
     </script>
 </body>
