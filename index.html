@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem QR Ulasan</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
+    <style>
+        :root { --primary: #2563eb; --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --border: #e2e8f0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+        
+        /* UTILITAS LAYOUT */
+        .flex-center { display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+        .hidden { display: none !important; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        
+        /* 1. LAYAR PELANGGAN (SCAN) */
+        .scan-card { background: var(--surface); width: 85%; max-width: 320px; border-radius: 20px; padding: 40px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .spinner { border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .scan-card h2 { margin: 0 0 8px 0; font-size: 20px; }
+        .scan-card p { color: #64748b; font-size: 15px; margin: 0; }
+        .btn-fallback { display: none; margin-top: 15px; padding: 12px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; width:100%; }
+
+        /* 2. LAYAR ADMIN LOGIN */
+        .login-box { background: var(--surface); padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 90%; max-width: 350px; text-align: left; }
+        .login-box h2 { margin-top: 0; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #64748b; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+
+        /* 3. LAYAR ADMIN DASHBOARD */
+        .navbar { background: var(--surface); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-wrap: wrap; gap:10px;}
+        .nav-menus button { background: none; border: none; color: #64748b; font-weight: bold; cursor: pointer; padding: 8px 15px; }
+        .nav-menus button.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+        .main-content { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--surface); padding: 25px; border-radius: 12px; margin-bottom: 20px; overflow-x: auto; }
+        
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 600px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background: #f1f5f9; }
+        
+        /* MODAL QR */
+        #qr-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; }
+        #qr-canvas { margin: 15px auto; border: 1px solid #eee; border-radius: 10px; display: block; }
+        .copy-box { display: flex; margin-bottom: 20px; }
+        .copy-box input { width: 100%; padding: 10px; border: 1px solid var(--border); background: #f8fafc; border-radius: 6px 0 0 6px; }
+        .copy-box button { background: var(--text); color: white; border: none; padding: 10px 15px; border-radius: 0 6px 6px 0; font-weight: bold; cursor:pointer;}
+        
+        /* TABS */
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. VIEW PELANGGAN (SCAN) -->
+    <div id="view-scan" class="flex-center hidden">
+        <div class="scan-card">
+            <div class="spinner" id="loading-spinner"></div>
+            <h2 id="scan-title">Mohon Tunggu...</h2>
+            <p id="scan-subtitle">Memeriksa kode QR</p>
+            <a href="#" target="_top" class="btn-fallback" id="fallback-btn">Buka Halaman Ulasan</a>
+        </div>
+    </div>
+
+    <!-- 2. VIEW ADMIN LOGIN -->
+    <div id="view-login" class="flex-center hidden">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <div class="input-group"><label>Username</label><input type="text" id="username"></div>
+            <div class="input-group"><label>Password</label><input type="password" id="password"></div>
+            <button class="btn" style="width:100%" onclick="doLogin()" id="btn-login">Login</button>
+            <p id="login-msg" style="color:red; font-size: 13px; display:none; margin-top:10px; text-align:center;"></p>
+        </div>
+    </div>
+
+    <!-- 3. VIEW ADMIN DASHBOARD -->
+    <div id="view-dashboard" class="hidden">
+        <div class="navbar">
+            <h2 style="margin:0; color:var(--primary);">QR Reviews</h2>
+            <div class="nav-menus">
+                <button class="active" onclick="switchTab('tab-qr', this)">Kelola QR</button>
+                <button onclick="switchTab('tab-log', this)">Log Aktivitas</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- TAB: KELOLA QR -->
+            <div id="tab-qr" class="page active">
+                <div class="card">
+                    <h3 style="margin-top:0;">Buat QR Baru</h3>
+                    <div class="grid-form">
+                        <div class="input-group" style="margin:0;"><label>Kode Toko</label><input type="text" id="add-id" placeholder="T391"></div>
+                        <div class="input-group" style="margin:0;"><label>Nama Toko</label><input type="text" id="add-name" placeholder="Kopi Senja"></div>
+                        <div class="input-group" style="margin:0;"><label>URL Ulasan</label><input type="text" id="add-url" placeholder="https://..."></div>
+                        <button class="btn" id="btn-add" onclick="addStore()">Simpan Data</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-top:0;">Daftar Toko & QR Code</h3>
+                    <table>
+                        <thead><tr><th>Kode QR</th><th>Nama Toko</th><th>URL Tujuan</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+                        <tbody id="table-store"><tr><td colspan="5">Memuat data...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: LOG AKTIVITAS -->
+            <div id="tab-log" class="page">
+                <div class="card">
+                    <h3 style="margin-top:0;">Aktivitas Scan (100 Terakhir)</h3>
+                    <table>
+                        <thead><tr><th>Waktu Scan</th><th>Kode QR</th><th>Nama Toko</th><th>Status</th></tr></thead>
+                        <tbody id="table-log"><tr><td colspan="4">Memuat log...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL QR -->
+    <div id="qr-modal" class="hidden">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin-top:0;"></h3>
+            <canvas id="qr-canvas" width="300" height="300"></canvas>
+            <div class="copy-box">
+                <input type="text" id="qr-url-input" readonly>
+                <button onclick="copyUrl()" id="btn-copy">Copy</button>
+            </div>
+            <button class="btn" style="width:100%; margin-bottom:10px;" onclick="downloadQR()">Download QR (PNG)</button>
+            <button class="btn" style="width:100%; background:white; color:var(--text); border:1px solid var(--border);" onclick="document.getElementById('qr-modal').classList.add('hidden')">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. GANTI DENGAN URL API APPS SCRIPT ANDA
+        // ==========================================
+        const API_URL = "URL_APPS_SCRIPT_ANDA_DISINI"; 
+        
+        // BASE URL (Url Github Anda tanpa parameter)
+        const BASE_URL = window.location.href.split('?')[0]; 
+        
+        let currentStoreId = "";
+
+        // ==========================================
+        // 2. SISTEM ROUTING (Deteksi Buka Admin / Pelanggan)
+        // ==========================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const storeId = urlParams.get('store');
+
+        if (storeId) {
+            // JIKA ADA PARAMETER STORE = TAMPILKAN LAYAR PELANGGAN
+            document.getElementById('view-scan').classList.remove('hidden');
+            processCustomerScan(storeId);
+        } else {
+            // JIKA TIDAK ADA PARAMETER = TAMPILKAN LAYAR ADMIN
+            if(sessionStorage.getItem('isLogged')) {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                loadData();
+            } else {
+                document.getElementById('view-login').classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // 3. FUNGSI PELANGGAN (AUTO-REDIRECT)
+        // ==========================================
+        function processCustomerScan(id) {
+            fetch(`${API_URL}?action=scan&store=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('scan-title').innerText = data.name;
+                        document.getElementById('scan-subtitle').innerText = "Mengarahkan ke Google Ulasan...";
+                        document.getElementById('fallback-btn').href = data.url;
+                        
+                        setTimeout(() => { 
+                            try { window.top.location.replace(data.url); } 
+                            catch(e) { window.location.replace(data.url); }
+                        }, 500);
+
+                        setTimeout(() => {
+                            document.getElementById('loading-spinner').classList.add('hidden');
+                            document.getElementById('scan-subtitle').innerText = "Klik tombol di bawah ini untuk melanjutkan.";
+                            document.getElementById('fallback-btn').style.display = 'block';
+                        }, 2500);
+                        
+                    } else {
+                        document.getElementById('loading-spinner').classList.add('hidden');
+                        document.getElementById('scan-title').innerText = "Oops!";
+                        document.getElementById('scan-subtitle').innerHTML = `<span style="color:red">Toko tidak ditemukan.</span>`;
+                    }
+                }).catch(() => {
+                    document.getElementById('scan-title').innerText = "Oops!";
+                    document.getElementById('scan-subtitle').innerText = "Gagal terhubung ke server.";
+                });
+        }
+
+        // ==========================================
+        // 4. FUNGSI ADMIN (LOGIN & DASHBOARD)
+        // ==========================================
+        function doLogin() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const btn = document.getElementById('btn-login');
+            btn.innerText = "Memeriksa...";
+            
+            fetch(`${API_URL}?action=login&user=${u}&pass=${p}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        sessionStorage.setItem('isLogged', 'true');
+                        document.getElementById('view-login').classList.add('hidden');
+                        document.getElementById('view-dashboard').classList.remove('hidden');
+                        loadData();
+                    } else {
+                        document.getElementById('login-msg').innerText = data.message;
+                        document.getElementById('login-msg').style.display = 'block';
+                    }
+                    btn.innerText = "Login";
+                });
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLogged');
+            window.location.reload();
+        }
+
+        function switchTab(pageId, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-menus button').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            btn.classList.add('active');
+            if(pageId === 'tab-log') loadLogs();
+        }
+
+        function loadData() {
+            fetch(`${API_URL}?action=get_data`).then(res => res.json()).then(res => {
+                const tbody = document.getElementById('table-store');
+                tbody.innerHTML = res.data.length ? '' : '<tr><td colspan="5">Belum ada data.</td></tr>';
+                res.data.forEach(item => {
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${item.id}</strong></td><td>${item.name}</td>
+                        <td><a href="${item.url}" target="_blank" style="font-size:12px; color:blue;">Link Google Maps</a></td>
+                        <td>${item.date}</td>
+                        <td><button class="btn" style="padding:6px; font-size:12px;" onclick="showQR('${item.id}', '${item.name}')">Lihat QR</button></td>
+                    </tr>`;
+                });
+            });
+        }
+
+        function loadLogs() {
+            fetch(`${API_URL}?action=get_logs`).then(res => res.json()).then(res => {
+                const tbody = document.getElementById('table-log');
+                tbody.innerHTML = res.data.length ? '' : '<tr><td colspan="4">Belum ada aktivitas.</td></tr>';
+                res.data.forEach(item => {
+                    tbody.innerHTML += `<tr><td>${item.time}</td><td><strong>${item.id}</strong></td><td>${item.name}</td><td>${item.status}</td></tr>`;
+                });
+            });
+        }
+
+        function addStore() {
+            const id = document.getElementById('add-id').value.trim();
+            const name = document.getElementById('add-name').value.trim();
+            const url = document.getElementById('add-url').value.trim();
+            if(!id || !name || !url) return alert("Semua kolom wajib diisi!");
+            
+            document.getElementById('btn-add').innerText = "Menyimpan...";
+            fetch(`${API_URL}?action=add_store&id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
+                .then(res => res.json()).then(data => {
+                    alert(data.message);
+                    if(data.success) {
+                        document.getElementById('add-id').value = '';
+                        document.getElementById('add-name').value = '';
+                        document.getElementById('add-url').value = '';
+                        loadData();
+                    }
+                    document.getElementById('btn-add').innerText = "Simpan Data";
+                });
+        }
+
+        // ==========================================
+        // 5. FUNGSI GENERATE QR, COPY, DAN DOWNLOAD
+        // ==========================================
+        async function showQR(storeId, storeName) {
+            document.getElementById('qr-modal').classList.remove('hidden');
+            document.getElementById('modal-title').innerText = storeName + " (" + storeId + ")";
+            currentStoreId = storeId;
+            
+            // LINK DINAMIS (Mengarah ke file index ini sendiri + ?store=ID)
+            const finalUrl = `${BASE_URL}?store=${storeId}`;
+            document.getElementById('qr-url-input').value = finalUrl;
+            
+            const canvas = document.getElementById('qr-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            await QRCode.toCanvas(canvas, finalUrl, {
+                width: 250, margin: 2, color: { dark: '#000000', light: '#ffffff' }, errorCorrectionLevel: 'H' 
+            });
+
+            // Gambar teks di tengah QR
+            const center = canvas.width / 2;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(center - 35, center - 15, 70, 30);
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = '#2563eb';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(storeId, center, center);
+        }
+
+        function copyUrl() {
+            const urlInput = document.getElementById('qr-url-input');
+            urlInput.select();
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                const btn = document.getElementById('btn-copy');
+                btn.innerText = "Tersalin!";
+                btn.style.background = "#166534";
+                setTimeout(() => { btn.innerText = "Copy"; btn.style.background = "var(--text)"; }, 2000);
+            });
+        }
+
+        function downloadQR() {
+            const link = document.createElement('a');
+            link.download = `${currentStoreId}.png`;
+            link.href = document.getElementById('qr-canvas').toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
