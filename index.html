@@ -28,22 +28,41 @@
             --bg: #f8fafc; --surface: #ffffff;
             --text: #0f172a; --subtext: #64748b;
             --border: #e2e8f0; --radius: 12px;
+            
+            /* iOS Colors */
+            --ios-primary: #007aff;
+            --ios-primary-dark: #0056b3;
+            --ios-danger: #ff3b30;
+            --ios-danger-hover: #d32f2f;
+            --ios-success: #34c759;
+            --ios-success-hover: #2e7d32;
         }
 
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
         /* UTILITAS */
         .hidden { display: none !important; }
-        .flex-center { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .flex-center { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        /* KOMPONEN INPUT & TOMBOL */
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn:hover { background: var(--primary-hover); }
+        /* KOMPONEN INPUT & TOMBOL DENGAN HOVER EFFECT BARU */
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;}
+        
+        /* Hover Effects */
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0); box-shadow: none; }
+        
         .btn-accent { background: var(--accent); }
-        .btn-accent:hover { background: var(--accent-hover); }
+        .btn-accent:hover { background: var(--accent-hover); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+        
         .btn-outline { background: white; color: var(--text); border: 1px solid var(--border); }
-        .btn-danger { background: #ef4444; }
+        .btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        
+        .btn-danger { background: var(--ios-danger); }
+        .btn-danger:hover { background: var(--ios-danger-hover); box-shadow: 0 4px 12px rgba(255, 59, 48, 0.25); }
+
+        .btn-success { background: var(--ios-success); }
+        .btn-success:hover { background: var(--ios-success-hover); box-shadow: 0 4px 12px rgba(52, 199, 89, 0.25); }
         
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--subtext); margin-bottom: 6px; }
@@ -54,93 +73,124 @@
         .auth-card { background: var(--surface); padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); width: 100%; max-width: 400px; text-align: center; border: 1px solid var(--border); }
         
         /* DASHBOARD NAVBAR */
-        .navbar { background: var(--surface); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top:0; z-index:10; }
-        .nav-tabs { display: flex; gap: 12px; }
-        .nav-tab { background: none; border: none; font-size: 14px; font-weight: 600; color: var(--subtext); cursor: pointer; padding: 8px 12px; border-radius: 6px; }
-        .nav-tab.active { background: #f1f5f9; color: var(--accent); }
+        .navbar { background: var(--surface); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top:0; z-index:10; flex-wrap: wrap; gap: 10px;}
+        .nav-tabs { display: flex; gap: 8px; background: rgba(118, 118, 128, 0.12); padding: 4px; border-radius: 10px; }
+        .nav-tab { background: transparent; border: none; font-size: 14px; font-weight: 600; color: var(--subtext); cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: 0.2s; }
+        .nav-tab.active { background: #ffffff; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .nav-tab:hover:not(.active) { color: var(--text); }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-        .card { background: var(--surface); border-radius: 16px; padding: 24px; border: 1px solid var(--border); margin-bottom: 24px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; width: 100%; }
+        .card { background: var(--surface); border-radius: 16px; padding: 24px; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         
         /* FORM GRID & TABLE */
         .grid-tambah { display: grid; grid-template-columns: 1fr 1.5fr 2fr auto; gap: 16px; align-items: end; }
-        .table-wrap { overflow-x: auto; margin-top: 16px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .table-wrap { overflow-x: auto; margin-top: 16px; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; background: #fff;}
         th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { background: #f8fafc; color: var(--subtext); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        tr:hover { background: #f8fafc; }
         
         /* MODAL ENTERPRISE */
-        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.2s; }
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.2s; padding: 20px;}
         .modal-bg.show { opacity: 1; pointer-events: auto; }
-        .modal-content { background: var(--surface); padding: 32px; border-radius: 20px; width: 100%; max-width: 480px; transform: scale(0.95); transition: 0.2s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-content { background: var(--surface); padding: 32px; border-radius: 20px; width: 100%; max-width: 420px; transform: scale(0.95); transition: 0.2s; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center;}
         .modal-bg.show .modal-content { transform: scale(1); }
         
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
         @media (max-width: 768px) {
             .grid-tambah { grid-template-columns: 1fr; }
-            .navbar { flex-direction: column; gap: 16px; padding: 16px; }
-            .nav-tabs { width: 100%; justify-content: center; overflow-x: auto; }
+            .navbar { flex-direction: column; padding: 16px; }
+            .nav-tabs { width: 100%; justify-content: flex-start; overflow-x: auto; }
         }
+
+        /* Analytics Tab Design */
+        .ga-card { text-align: center; padding: 40px 20px; }
+        .ga-icon { font-size: 48px; margin-bottom: 16px; }
     </style>
 </head>
 <body id="app-body">
 
-    <!-- 1. AUTENTIKASI SISTEM (LOGIN) -->
+    <!-- 1. VIEW PELANGGAN (REDIRECT INSTAN TANPA LOADING) -->
+    <!-- Dihapus layar spinnernya. Script akan langsung menghide body dan melompat. -->
+
+    <!-- 2. AUTENTIKASI SISTEM (LOGIN) -->
     <div id="view-login" class="flex-center hidden">
         <div class="auth-card">
             <h2 style="margin:0 0 8px 0; font-size: 24px;">Autentikasi Sistem</h2>
-            <p style="color:var(--subtext); margin:0 0 24px 0; font-size:14px;">Masukkan kredensial administrator Anda</p>
+            <p style="color:var(--subtext); margin:0 0 24px 0; font-size:14px;">Akses dengan 12 Jam Sesi Otomatis</p>
             
+            <!-- Input text biasa memastikan angka bisa diketik -->
             <div class="form-group">
                 <label>Nama Pengguna</label>
-                <input type="text" id="login-user" class="form-control" onkeydown="if(event.key==='Enter') login()">
+                <input type="text" id="login-user" class="form-control" placeholder="Masukkan username" autocomplete="username" inputmode="text" onkeydown="if(event.key==='Enter') login()">
             </div>
             <div class="form-group">
                 <label>Kata Sandi</label>
-                <input type="password" id="login-pass" class="form-control" onkeydown="if(event.key==='Enter') login()">
+                <input type="password" id="login-pass" class="form-control" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') login()">
             </div>
             <button class="btn btn-accent" style="width:100%; padding:14px; margin-top:8px;" onclick="login()" id="btn-login">Masuk ke Dasbor</button>
+            <p id="login-msg" style="color:var(--ios-danger); font-size:13px; display:none; margin-top:14px; font-weight:bold;"></p>
         </div>
     </div>
 
-    <!-- 2. DASBOR UTAMA -->
+    <!-- 3. DASBOR UTAMA -->
     <div id="view-dashboard" class="hidden">
         <div class="navbar">
-            <h3 style="margin:0; font-weight:800; letter-spacing:-0.5px;">Workspace<span style="color:var(--accent)">.QR</span></h3>
+            <h3 style="margin:0; font-weight:800; letter-spacing:-0.5px; font-size: 22px;">Workspace<span style="color:var(--accent)">.QR</span></h3>
             <div class="nav-tabs">
-                <button class="nav-tab active" onclick="switchTab('tab-qr', this)">Titik Ulasan</button>
-                <button class="nav-tab" onclick="switchTab('tab-audit', this)">Audit Trail</button>
-                <button class="nav-tab hidden" id="tab-btn-users" onclick="switchTab('tab-users', this)">Manajemen Staf</button>
+                <button class="nav-tab active" onclick="switchTab('tab-qr', this)">Kelola QR</button>
+                <button class="nav-tab" onclick="switchTab('tab-log', this)">Log Scan</button>
+                <button class="nav-tab" onclick="switchTab('tab-analytics', this)">Analytics (GA4)</button>
             </div>
-            <button class="btn btn-outline" style="padding:8px 16px;" onclick="logout()">Keluar Akun</button>
+            <button class="btn btn-outline" style="padding:8px 16px;" onclick="logout()">Keluar</button>
         </div>
 
         <div class="container">
-            <!-- TAB: TITIK ULASAN -->
+            <!-- TAB: KELOLA QR -->
             <div id="tab-qr" class="page-view">
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
-                        <h3 style="margin:0;">Registrasi Titik Ulasan Baru</h3>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-outline" onclick="downloadTemplateXLSX()">📥 Unduh Format Excel (XLSX)</button>
-                            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">📤 Import Data Excel</button>
-                            <input type="file" id="import-file" accept=".xlsx, .xls" class="hidden" onchange="processImportXLSX(event)">
+                
+                <!-- MENU IMPORT/EXPORT DIPINDAH KE PALING ATAS -->
+                <div class="card" style="background: linear-gradient(145deg, #ffffff, #f8fafc); border-color: #cbd5e1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                        <div>
+                            <h3 style="margin:0 0 4px 0;">Aksi Cepat Data Massal</h3>
+                            <p style="margin:0; font-size:13px; color:var(--subtext);">Gunakan format Excel/CSV untuk menambah banyak toko sekaligus.</p>
                         </div>
-                    </div>
-                    
-                    <div class="grid-tambah">
-                        <div class="form-group" style="margin:0;"><label>Kode Unik Registrasi</label><input type="text" id="f-id" class="form-control" placeholder="Cth: T391" onkeydown="if(event.key==='Enter') addStore()"></div>
-                        <div class="form-group" style="margin:0;"><label>Deskripsi / Nama Titik</label><input type="text" id="f-name" class="form-control" placeholder="Cth: Cabang Utama" onkeydown="if(event.key==='Enter') addStore()"></div>
-                        <div class="form-group" style="margin:0;"><label>Tautan URL Maps Ulasan</label><input type="text" id="f-url" class="form-control" placeholder="https://..." onkeydown="if(event.key==='Enter') addStore()"></div>
-                        <button class="btn btn-accent" id="btn-add" onclick="addStore()">Registrasi Data</button>
+                        <div style="display:flex; gap:12px; flex-wrap: wrap;">
+                            <button class="btn btn-outline" onclick="downloadTemplateCSV()">📥 Unduh Template Format</button>
+                            <button class="btn btn-success" onclick="openImportModal()">📤 Import Data (Unggah)</button>
+                        </div>
                     </div>
                 </div>
 
+                <!-- FORM TAMBAH TOKO -->
+                <div class="card">
+                    <h3 style="margin-top:0; margin-bottom:16px;">Registrasi Toko Baru</h3>
+                    <div class="grid-tambah">
+                        <div class="form-group" style="margin:0;">
+                            <label>Kode Toko (ID)</label>
+                            <input type="text" id="add-id" class="form-control" placeholder="Cth: T391" autocomplete="off" onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Nama / Deskripsi Toko</label>
+                            <input type="text" id="add-name" class="form-control" placeholder="Cth: Cabang Pusat" autocomplete="off" onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>URL Ulasan Google Maps</label>
+                            <input type="text" id="add-url" class="form-control" placeholder="https://search.google.com/..." autocomplete="off" onkeydown="if(event.key==='Enter') addStore()">
+                        </div>
+                        <button class="btn btn-accent" id="btn-add" onclick="addStore()">Simpan Data</button>
+                    </div>
+                </div>
+
+                <!-- TABEL DATA -->
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:16px;">
-                        <input type="text" id="search-qr" class="form-control" style="max-width:300px;" placeholder="Cari Kode atau Deskripsi..." onkeyup="filterQR()">
+                        <input type="text" id="search-input" class="form-control" style="max-width:300px;" placeholder="🔍 Cari Kode atau Nama..." onkeyup="filterStores()">
                         <div style="display:flex; gap:8px;">
-                            <button class="btn btn-danger hidden" id="btn-del-multi" onclick="deleteMultiStores()">🗑️ Hapus (<span id="cnt-del">0</span>)</button>
-                            <button class="btn btn-accent hidden" id="btn-dl-multi" onclick="downloadMultiQR()">⬇️ Unduh QR Terpisah (<span id="cnt-dl">0</span>)</button>
+                            <button class="btn btn-danger hidden" id="btn-multi-delete" onclick="deleteSelectedStores()">🗑️ Hapus Terpilih (<span id="select-count">0</span>)</button>
+                            <button class="btn btn-accent hidden" id="btn-multi-download" onclick="downloadSelectedQRs()">⬇️ Unduh QR Massal (<span id="select-count-dl">0</span>)</button>
                         </div>
                     </div>
 
@@ -148,350 +198,457 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width:40px;"><input type="checkbox" onchange="toggleAllQR(this)"></th>
-                                    <th>Kode Reg</th>
-                                    <th>Deskripsi Titik</th>
-                                    <th>Tautan Destinasi</th>
-                                    <th>Dibuat Oleh</th>
-                                    <th style="text-align:right;">Manajemen Data</th>
+                                    <th style="width:40px;"><input type="checkbox" id="check-all" onclick="toggleSelectAll(this)"></th>
+                                    <th>Kode QR</th>
+                                    <th>Nama Toko</th>
+                                    <th>Tautan URL Maps</th>
+                                    <th>Tanggal Dibuat</th>
+                                    <th style="text-align:right;">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="tb-qr"><tr><td colspan="6" style="text-align:center;">Sinkronisasi data...</td></tr></tbody>
+                            <tbody id="table-store">
+                                <tr><td colspan="6" style="text-align:center;">Sinkronisasi data...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB: AUDIT TRAIL -->
-            <div id="tab-audit" class="page-view hidden">
+            <!-- TAB: LOG SCAN -->
+            <div id="tab-log" class="page-view hidden">
                 <div class="card">
-                    <h3 style="margin:0 0 16px 0;">Log Aktivitas Sistem (Audit Trail)</h3>
+                    <h3 style="margin:0 0 16px 0;">Log Aktivitas Scan Real-time</h3>
                     <div class="table-wrap">
                         <table>
-                            <thead><tr><th>Waktu Rekam</th><th>Pelaku (Staf)</th><th>Peran Akses</th><th>Jenis Aksi</th><th>Detail Keterangan</th></tr></thead>
-                            <tbody id="tb-audit"><tr><td colspan="5" style="text-align:center;">Mengambil log sistem...</td></tr></tbody>
+                            <thead>
+                                <tr>
+                                    <th>Waktu Scan</th>
+                                    <th>Kode QR</th>
+                                    <th>Nama Toko</th>
+                                    <th>Status Akses</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-log">
+                                <tr><td colspan="4" style="text-align:center;">Memuat log...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB: MANAJEMEN STAF (KHUSUS SUPERADMIN) -->
-            <div id="tab-users" class="page-view hidden">
-                <div class="card">
-                    <h3 style="margin:0 0 16px 0;">Penambahan Staf Pengelola</h3>
-                    <div class="grid-tambah" style="grid-template-columns: 1fr 1fr 1fr auto;">
-                        <div class="form-group" style="margin:0;"><label>Nama Pengguna Baru</label><input type="text" id="u-user" class="form-control" onkeydown="if(event.key==='Enter') addUser()"></div>
-                        <div class="form-group" style="margin:0;"><label>Kata Sandi</label><input type="password" id="u-pass" class="form-control" onkeydown="if(event.key==='Enter') addUser()"></div>
-                        <div class="form-group" style="margin:0;">
-                            <label>Peran Hak Akses</label>
-                            <select id="u-role" class="form-control">
-                                <option value="staff">Staf Operasional</option>
-                                <option value="superadmin">Administrator (Superadmin)</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-accent" onclick="addUser()">Tambah Akses</button>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3 style="margin:0 0 16px 0;">Daftar Autentikasi Pengguna</h3>
-                    <div class="table-wrap">
-                        <table>
-                            <thead><tr><th>Nama Pengguna</th><th>Kata Sandi (Terenkripsi Visual)</th><th>Peran Akses</th><th style="text-align:right;">Aksi</th></tr></thead>
-                            <tbody id="tb-users"></tbody>
-                        </table>
-                    </div>
+            <!-- TAB: GOOGLE ANALYTICS -->
+            <div id="tab-analytics" class="page-view hidden">
+                <div class="card ga-card">
+                    <div class="ga-icon">📊</div>
+                    <h2 style="margin:0 0 10px 0;">Pantau Data Google Analytics 4</h2>
+                    <p style="color:var(--subtext); max-width:600px; margin: 0 auto 24px auto; line-height: 1.6;">
+                        Sistem pelacakan <b>G-6K7PTY41BP</b> telah aktif di latar belakang. Karena kebijakan keamanan Google, data lalu lintas *real-time*, lokasi pelanggan, dan jenis perangkat seluler tidak dapat disematkan langsung di dalam halaman ini dan hanya dapat dilihat secara eksklusif melalui Dasbor Resmi Google Analytics.
+                    </p>
+                    <a href="https://analytics.google.com/" target="_blank" class="btn btn-accent" style="padding: 14px 24px; font-size: 16px;">Buka Dasbor Google Analytics ↗</a>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- MODAL: QR VIEWER PROFESSIONAL -->
-    <div id="mdl-qr" class="modal-bg">
-        <div class="modal-content" style="text-align:center;">
-            <h3 id="mdl-qr-title" style="margin:0 0 8px 0; font-size:22px;">Pratinjau Kode QR</h3>
-            <p style="color:var(--subtext); margin:0 0 24px 0; font-size:14px;">Resolusi tinggi (800x800 px) untuk kualitas cetak optimal.</p>
-            
-            <canvas id="qr-canvas" style="max-width:100%; border-radius:12px; margin-bottom:24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);"></canvas>
-            
-            <div style="display:flex; gap:12px; flex-direction:column;">
-                <button class="btn btn-accent" onclick="downloadSingleQR()">Unduh Resolusi Tinggi (PNG)</button>
-                <button class="btn btn-outline" onclick="closeModal('mdl-qr')">Tutup Pratinjau</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: EDIT DATA -->
-    <div id="mdl-edit" class="modal-bg">
+    <!-- MODAL POP-UP: TAMPIL QR & COPY (DIPERKECIL) -->
+    <div id="modal-qr" class="modal-bg">
         <div class="modal-content">
-            <h3 style="margin:0 0 24px 0;">Ubah Data Titik</h3>
-            <input type="hidden" id="e-old-id">
-            <div class="form-group"><label>Kode Reg Baru</label><input type="text" id="e-id" class="form-control"></div>
-            <div class="form-group"><label>Deskripsi Baru</label><input type="text" id="e-name" class="form-control"></div>
-            <div class="form-group"><label>Tautan Destinasi Maps</label><input type="text" id="e-url" class="form-control"></div>
-            <div style="display:flex; gap:12px; margin-top:32px;">
-                <button class="btn btn-outline" style="flex:1;" onclick="closeModal('mdl-edit')">Batal</button>
-                <button class="btn btn-accent" style="flex:1;" onclick="submitEdit()">Simpan Form</button>
+            <h3 id="modal-qr-title" style="margin:0 0 8px 0; font-size:20px;">QR Code Toko</h3>
+            
+            <!-- Canvas diperkecil dari 280 menjadi 220px melalui style dan logic JS -->
+            <canvas id="qr-canvas" style="margin:16px auto; border-radius:12px; max-width: 200px;"></canvas>
+            
+            <div style="display:flex; gap:8px; margin-bottom:16px;">
+                <input type="text" id="qr-url-input" class="form-control" style="font-size:12px; background:#f1f5f9;" readonly>
+                <button class="btn btn-outline" onclick="copyUrl()" id="btn-copy">Copy</button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btn-accent" onclick="downloadSingleQR()">⬇️ Unduh Gambar PNG</button>
+                <button class="btn btn-outline" onclick="closeModal('modal-qr')">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: NOTIFIKASI -->
-    <div id="mdl-alert" class="modal-bg">
-        <div class="modal-content" style="max-width:360px; text-align:center; padding:40px 32px;">
-            <h3 id="alert-title" style="margin:0 0 12px 0;">Info</h3>
-            <p id="alert-msg" style="color:var(--subtext); margin:0 0 24px 0; line-height:1.5;"></p>
-            <button class="btn btn-accent" style="width:100%;" onclick="closeModal('mdl-alert')">Mengerti</button>
+    <!-- MODAL POP-UP: EDIT TOKO -->
+    <div id="modal-edit" class="modal-bg">
+        <div class="modal-content" style="text-align:left;">
+            <h3 style="margin:0 0 24px 0; text-align:center;">Ubah Data Toko</h3>
+            <input type="hidden" id="edit-old-id">
+            
+            <div class="form-group">
+                <label>Kode Toko</label>
+                <input type="text" id="edit-id" class="form-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            <div class="form-group">
+                <label>Nama Toko</label>
+                <input type="text" id="edit-name" class="form-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            <div class="form-group">
+                <label>URL Google Maps Review</label>
+                <input type="text" id="edit-url" class="form-control" onkeydown="if(event.key==='Enter') submitEditStore()">
+            </div>
+            
+            <div style="display:flex; gap:12px; margin-top:24px;">
+                <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-edit')">Batal</button>
+                <button class="btn btn-accent" style="flex:1;" onclick="submitEditStore()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP: IMPORT CSV -->
+    <div id="modal-import" class="modal-bg">
+        <div class="modal-content">
+            <h3 style="margin:0 0 8px 0;">Import Data CSV</h3>
+            <p style="font-size:13px; color:var(--subtext); margin-bottom:20px; line-height: 1.5;">Pilih file CSV yang sudah disesuaikan dengan format template (kolom: <code>store_id</code>, <code>store_name</code>, <code>review_url</code>).</p>
+            
+            <input type="file" id="import-file-input" accept=".csv, .txt" class="form-control" style="padding:10px; margin-bottom:20px;">
+            
+            <div style="display:flex; gap:12px;">
+                <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-import')">Batal</button>
+                <button class="btn btn-accent" style="flex:1;" onclick="processImportFile()">Mulai Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ALERT NOTIFIKASI GENERAL -->
+    <div id="modal-alert" class="modal-bg">
+        <div class="modal-content" style="max-width:340px; padding: 40px 32px;">
+            <h3 id="alert-title" style="margin:0 0 12px 0;">Informasi</h3>
+            <p id="alert-msg" style="color:var(--subtext); font-size:15px; margin-bottom:24px; line-height: 1.5;"></p>
+            <button class="btn btn-accent" style="width:100%;" onclick="closeModal('modal-alert')">Mengerti</button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // KONFIGURASI API (GANTI URL DI BAWAH INI)
+        // CONFIGURATION & SESSION MANAGEMENT
         // ==========================================
+        // ⚠️ GANTI LINK DI BAWAH INI DENGAN WEB APP URL DARI GOOGLE APPS SCRIPT ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbxxtklRC4XSSN7ZOXV94rfMPs2QIgKK69ZWe7oZP4tFVA8VeZ5BKvPP6K6aEzzyrQcxiA/exec"; 
         
         const BASE_URL = window.location.href.split('?')[0]; 
-        const SESSION_KEY = "enterprise_qr_session_12h";
-        const SESSION_DUR = 12 * 60 * 60 * 1000;
+        const SESSION_KEY = "ios_qr_review_session_12h";
+        const SESSION_DURATION_MS = 12 * 60 * 60 * 1000; // 12 JAM OTOMATIS
 
-        let dbStores = [], dbUsers = [];
-        let selectedQRs = new Set();
-        let currQR = null;
+        let allStoresData = [];
+        let selectedStoreIds = new Set();
+        let currentActiveStore = null;
 
-        // INIT SYSTEM (REDIRECT INSTAN JIKA ADA PARAMETER)
-        window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('store');
+        // INIT ROUTER & REDIRECT INSTAN (TANPA LOADING)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('store');
 
-            if (id) {
-                // INSTANT REDIRECT LOGIC
-                // Sembunyikan semua UI, kirim ke GA, panggil API background, dan pindah instan.
+            if (storeId) {
+                // REDIRECT INSTAN KETIKA DI-SCAN
+                // Sembunyikan isi HTML sepenuhnya agar putih/kosong
                 document.body.style.display = 'none';
                 
+                // Kirim event scan ke GA
                 if(typeof gtag === 'function') {
-                    gtag('event', 'scan_qr_code', { 'event_category': 'QR Scan', 'store_id': id });
+                    gtag('event', 'scan_qr_code', { 'event_category': 'QR Scan', 'store_id': storeId });
                 }
 
-                fetch(`${API_URL}?action=scan&store=${encodeURIComponent(id)}`)
-                .then(r => r.json())
-                .then(res => {
-                    // Beri jeda sangat kecil 300ms agar Google Analytic sempat mengirim ping data
-                    setTimeout(() => {
-                        if(res.success) window.top.location.replace(res.url);
-                        else {
-                            document.body.style.display = 'flex';
-                            document.body.innerHTML = `<div style="text-align:center; padding:50px; font-family:sans-serif;"><h3>Sistem Galat</h3><p>Tautan titik ulasan tidak valid atau telah dinonaktifkan.</p></div>`;
-                        }
-                    }, 300);
-                }).catch(()=> { window.top.location.replace("https://google.com"); });
+                // Tembak API dan langsung loncat ke URL Maps
+                fetch(`${API_URL}?action=scan&store=${encodeURIComponent(storeId)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.top.location.replace(data.url);
+                    } else {
+                        // Jika toko tidak ada, munculkan pesan error sederhana
+                        document.body.style.display = 'block';
+                        document.body.innerHTML = `<div style="text-align:center; padding:60px 20px; font-family:sans-serif;"><h3>Tautan Tidak Valid</h3><p style="color:#666;">Kode toko tidak ditemukan atau telah dinonaktifkan.</p></div>`;
+                    }
+                }).catch(() => {
+                    document.body.style.display = 'block';
+                    document.body.innerHTML = `<div style="text-align:center; padding:60px 20px; font-family:sans-serif;"><h3>Koneksi Terputus</h3><p style="color:#666;">Gagal menghubungi server.</p></div>`;
+                });
                 
-                return; // Hentikan script lainnya
-            } 
-            
-            // JIKA ADMIN
-            if (cekSesi()) {
-                document.getElementById('view-dashboard').classList.remove('hidden');
-                initDashboard();
             } else {
-                document.getElementById('view-login').classList.remove('hidden');
+                // MODES ADMIN DASHBOARD
+                if (isSessionValid()) {
+                    document.getElementById('view-dashboard').classList.remove('hidden');
+                    loadData();
+                } else {
+                    document.getElementById('view-login').classList.remove('hidden');
+                }
             }
-        };
+        });
 
         // ==========================================
         // MANAJEMEN SESI (12 JAM)
         // ==========================================
-        function cekSesi() {
+        function isSessionValid() {
+            const raw = localStorage.getItem(SESSION_KEY);
+            if (!raw) return false;
             try {
-                const s = JSON.parse(localStorage.getItem(SESSION_KEY));
-                return s && s.exp > Date.now() ? s : null;
-            } catch(e) { return null; }
-        }
-        function buatSesi(user, role) {
-            localStorage.setItem(SESSION_KEY, JSON.stringify({ user, role, exp: Date.now() + SESSION_DUR }));
-        }
-        function getApiExt() {
-            const s = cekSesi();
-            return s ? `&req_user=${encodeURIComponent(s.user)}&req_role=${encodeURIComponent(s.role)}` : '';
+                const session = JSON.parse(raw);
+                if (session.loggedIn && session.expiresAt && Date.now() < session.expiresAt) {
+                    return true;
+                }
+            } catch(e) {}
+            localStorage.removeItem(SESSION_KEY);
+            return false;
         }
 
-        // ==========================================
-        // AUTENTIKASI
-        // ==========================================
-        function login() {
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            if(!u || !p) return popAlert("Perhatian", "Kredensial wajib dilengkapi.");
-            
-            document.getElementById('btn-login').innerText = "Memverifikasi Kredensial...";
-            fetch(`${API_URL}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`)
-            .then(r => r.json()).then(res => {
-                if(res.success) {
-                    buatSesi(res.username, res.role);
-                    document.getElementById('view-login').classList.add('hidden');
-                    document.getElementById('view-dashboard').classList.remove('hidden');
-                    initDashboard();
-                } else popAlert("Akses Ditolak", res.message);
-                document.getElementById('btn-login').innerText = "Masuk ke Dasbor";
-            });
+        function saveSession() {
+            const session = { loggedIn: true, expiresAt: Date.now() + SESSION_DURATION_MS };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         }
+
+        function doLogin() {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            const btn = document.getElementById('btn-login');
+            
+            if(!u || !p) return showIosAlert("Peringatan", "Nama pengguna dan Kata Sandi wajib diisi!");
+            btn.innerText = "Memeriksa...";
+            
+            fetch(`${API_URL}?action=login&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        saveSession();
+                        document.getElementById('view-login').classList.add('hidden');
+                        document.getElementById('view-dashboard').classList.remove('hidden');
+                        loadData();
+                    } else {
+                        document.getElementById('login-msg').innerText = data.message;
+                        document.getElementById('login-msg').style.display = 'block';
+                    }
+                    btn.innerText = "Masuk ke Dasbor";
+                });
+        }
+
         function logout() {
             localStorage.removeItem(SESSION_KEY);
             window.location.reload();
         }
 
-        // ==========================================
-        // CORE DASHBOARD & TABS
-        // ==========================================
-        function initDashboard() {
-            const s = cekSesi();
-            if(s.role === 'superadmin') document.getElementById('tab-btn-users').classList.remove('hidden');
-            loadStores();
-        }
-
-        function switchTab(id, el) {
+        function switchTab(tabId, btn) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
             document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.remove('hidden');
-            el.classList.add('active');
-            
-            if(id === 'tab-audit') loadLogs();
-            if(id === 'tab-users') loadUsers();
+            document.getElementById(tabId).classList.remove('hidden');
+            btn.classList.add('active');
+            if(tabId === 'tab-log') loadLogs();
         }
 
         // ==========================================
-        // MODULE: DATA QR
+        // LOAD DATA & FILTERING
         // ==========================================
-        function loadStores() {
-            fetch(`${API_URL}?action=get_data${getApiExt()}`).then(r=>r.json()).then(res => {
-                dbStores = res.data || [];
-                renderQRTable(dbStores);
-            });
-        }
-        function renderQRTable(data) {
-            const tb = document.getElementById('tb-qr');
-            tb.innerHTML = '';
-            selectedQRs.clear(); updateMultiBtn();
-            if(data.length===0) return tb.innerHTML = `<tr><td colspan="6" style="text-align:center;">Tidak ada data registrasi.</td></tr>`;
-            
-            data.forEach(x => {
-                tb.innerHTML += `<tr>
-                    <td><input type="checkbox" class="cb-qr" value="${x.id}" onchange="toggleQR('${x.id}', this.checked)"></td>
-                    <td><strong>${x.id}</strong></td>
-                    <td>${x.name}</td>
-                    <td><a href="${x.url}" target="_blank" style="color:var(--accent); text-decoration:none;">Verifikasi URL ↗</a></td>
-                    <td>${x.creator}</td>
-                    <td style="text-align:right; white-space:nowrap;">
-                        <button class="btn btn-outline" style="padding:6px 12px;" onclick="previewQR('${x.id}')">Pratinjau QR</button>
-                        <button class="btn btn-outline" style="padding:6px 12px;" onclick="openEdit('${x.id}')">Ubah Data</button>
-                    </td>
-                </tr>`;
-            });
-        }
-        function filterQR() {
-            const q = document.getElementById('search-qr').value.toLowerCase();
-            renderQRTable(dbStores.filter(x => x.id.toLowerCase().includes(q) || x.name.toLowerCase().includes(q)));
+        function loadData() {
+            fetch(`${API_URL}?action=get_data`)
+                .then(res => res.json())
+                .then(res => {
+                    if(res.success) {
+                        allStoresData = res.data;
+                        renderTable(allStoresData);
+                    }
+                });
         }
 
-        function addStore() {
-            const id = document.getElementById('f-id').value;
-            const nm = document.getElementById('f-name').value;
-            const url = document.getElementById('f-url').value;
-            if(!id||!nm||!url) return popAlert("Error", "Lengkapi seluruh isian form.");
+        function renderTable(dataList) {
+            const tbody = document.getElementById('table-store');
+            tbody.innerHTML = '';
+            selectedStoreIds.clear();
+            updateMultiSelectUI();
             
-            document.getElementById('btn-add').innerText = "Memproses...";
-            fetch(`${API_URL}?action=add_store&id=${encodeURIComponent(id)}&name=${encodeURIComponent(nm)}&url=${encodeURIComponent(url)}${getApiExt()}`)
-            .then(r=>r.json()).then(res => {
-                popAlert(res.success?"Sukses":"Gagal", res.message);
-                if(res.success) { document.getElementById('f-id').value=''; document.getElementById('f-name').value=''; document.getElementById('f-url').value=''; loadStores(); }
-                document.getElementById('btn-add').innerText = "Registrasi Data";
+            if(!dataList || dataList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--subtext);">Tidak ada data toko ditemukan.</td></tr>';
+                return;
+            }
+
+            dataList.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="checkbox" class="store-checkbox" value="${item.id}" onchange="toggleSelectStore('${item.id}', this.checked)"></td>
+                        <td><strong>${item.id}</strong></td>
+                        <td>${item.name}</td>
+                        <td><a href="${item.url}" target="_blank" style="color:var(--accent); font-size:12px; text-decoration:none;">Kunjungi Link ↗</a></td>
+                        <td>${item.date}</td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-outline" style="padding:6px 12px; font-size: 13px;" onclick="showQR('${item.id}')">Lihat QR</button>
+                            <button class="btn btn-outline" style="padding:6px 12px; font-size: 13px;" onclick="openEditModal('${item.id}')">Edit</button>
+                        </td>
+                    </tr>
+                `;
             });
         }
 
-        function openEdit(id) {
-            const x = dbStores.find(s => s.id === id);
-            document.getElementById('e-old-id').value = x.id;
-            document.getElementById('e-id').value = x.id;
-            document.getElementById('e-name').value = x.name;
-            document.getElementById('e-url').value = x.url;
-            openModal('mdl-edit');
-        }
-        function submitEdit() {
-            const o = document.getElementById('e-old-id').value;
-            const n = document.getElementById('e-id').value;
-            const nm = document.getElementById('e-name').value;
-            const u = document.getElementById('e-url').value;
-            
-            fetch(`${API_URL}?action=edit_store&old_id=${o}&new_id=${n}&name=${nm}&url=${u}${getApiExt()}`)
-            .then(r=>r.json()).then(res => { closeModal('mdl-edit'); popAlert("Info", res.message); if(res.success) loadStores(); });
+        function filterStores() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const filtered = allStoresData.filter(s => 
+                s.id.toLowerCase().includes(query) || 
+                s.name.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
         }
 
-        // ==========================================
-        // MULTI ACTION (HAPUS & UNDUH)
-        // ==========================================
-        function toggleQR(id, st) { st ? selectedQRs.add(id) : selectedQRs.delete(id); updateMultiBtn(); }
-        function toggleAllQR(cb) {
-            document.querySelectorAll('.cb-qr').forEach(x => { x.checked = cb.checked; toggleQR(x.value, cb.checked); });
-        }
-        function updateMultiBtn() {
-            const c = selectedQRs.size;
-            document.getElementById('cnt-del').innerText = c; document.getElementById('cnt-dl').innerText = c;
-            document.getElementById('btn-del-multi').classList.toggle('hidden', c===0);
-            document.getElementById('btn-dl-multi').classList.toggle('hidden', c===0);
-        }
-        function deleteMultiStores() {
-            if(!confirm("Hapus seluruh data yang ditandai permanen?")) return;
-            fetch(`${API_URL}?action=delete_stores&ids=${encodeURIComponent(JSON.stringify(Array.from(selectedQRs)))}${getApiExt()}`)
-            .then(r=>r.json()).then(res => { popAlert("Info", res.message); loadStores(); });
-        }
-
-        // ==========================================
-        // EXCEL IMPORT & EXPORT (XLSX)
-        // ==========================================
-        function downloadTemplateXLSX() {
-            const data = [ ["store_id", "store_name", "review_url"], ["T392", "Cabang Barat", "https://search.google.com/local/writereview?placeid=XXX"] ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_QR");
-            XLSX.writeFile(wb, "Template_Import_WorkspaceQR.xlsx");
-        }
-
-        function processImportXLSX(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const data = new Uint8Array(ev.target.result);
-                const wb = XLSX.read(data, {type: 'array'});
-                const ws = wb.Sheets[wb.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(ws);
-                
-                if(json.length === 0 || !json[0].store_id || !json[0].store_name || !json[0].review_url) {
-                    document.getElementById('import-file').value = '';
-                    return popAlert("Format Ditolak", "Struktur header Excel tidak valid. Unduh format template terlebih dahulu.");
+        function loadLogs() {
+            fetch(`${API_URL}?action=get_logs`).then(res => res.json()).then(res => {
+                const tbody = document.getElementById('table-log');
+                tbody.innerHTML = '';
+                if(!res.data || res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada log scan.</td></tr>';
+                    return;
                 }
-                
-                popAlert("Proses Import", "Sedang mengirim data ke server, mohon tunggu...");
-                fetch(`${API_URL}?action=import_stores&payload=${encodeURIComponent(JSON.stringify(json))}${getApiExt()}`)
-                .then(r=>r.json()).then(res => { popAlert("Laporan Import", res.message); loadStores(); document.getElementById('import-file').value=''; });
-            };
-            reader.readAsArrayBuffer(file);
+                res.data.forEach(item => {
+                    const isSuccess = item.status.includes('Berhasil') || item.status.includes('Sukses');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.time}</td>
+                            <td><strong>${item.id}</strong></td>
+                            <td>${item.name}</td>
+                            <td><span style="color:${isSuccess?'var(--ios-success)':'var(--ios-danger)'}; font-weight:600;">${item.status}</span></td>
+                        </tr>
+                    `;
+                });
+            });
         }
 
         // ==========================================
-        // RENDER QR PROFESIONAL (HIGH-RES, BLACK TEXT)
+        // TAMBAH & EDIT TOKO
         // ==========================================
-        async function drawQR(canvas, textId) {
-            const url = `${BASE_URL}?store=${textId}`;
-            // Render ukuran besar 800x800
-            await QRCode.toCanvas(canvas, url, { width: 800, margin: 2, color: { dark: '#000000', light: '#ffffff' }, errorCorrectionLevel: 'H' });
+        function addStore() {
+            const id = document.getElementById('add-id').value.trim();
+            const name = document.getElementById('add-name').value.trim();
+            const url = document.getElementById('add-url').value.trim();
             
+            if(!id || !name || !url) return showIosAlert("Peringatan", "Semua kolom form harus diisi!");
+            
+            document.getElementById('btn-add').innerText = "Menyimpan...";
+            fetch(`${API_URL}?action=add_store&id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
+                .then(res => res.json())
+                .then(data => {
+                    showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
+                    if(data.success) {
+                        document.getElementById('add-id').value = '';
+                        document.getElementById('add-name').value = '';
+                        document.getElementById('add-url').value = '';
+                        loadData();
+                    }
+                    document.getElementById('btn-add').innerText = "Simpan Data";
+                });
+        }
+
+        function openEditModal(storeId) {
+            const store = allStoresData.find(s => s.id === storeId);
+            if(!store) return;
+            
+            document.getElementById('edit-old-id').value = store.id;
+            document.getElementById('edit-id').value = store.id;
+            document.getElementById('edit-name').value = store.name;
+            document.getElementById('edit-url').value = store.url;
+            
+            openModal('modal-edit');
+        }
+
+        function submitEditStore() {
+            const oldId = document.getElementById('edit-old-id').value;
+            const newId = document.getElementById('edit-id').value.trim();
+            const name = document.getElementById('edit-name').value.trim();
+            const url = document.getElementById('edit-url').value.trim();
+
+            if(!newId || !name || !url) return showIosAlert("Peringatan", "Semua kolom wajib diisi!");
+
+            fetch(`${API_URL}?action=edit_store&old_id=${encodeURIComponent(oldId)}&new_id=${encodeURIComponent(newId)}&name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}`)
+                .then(res => res.json())
+                .then(data => {
+                    closeModal('modal-edit');
+                    showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
+                    if(data.success) loadData();
+                });
+        }
+
+        // ==========================================
+        // MULTI SELECT & MULTI DELETE
+        // ==========================================
+        function toggleSelectStore(id, checked) {
+            if(checked) selectedStoreIds.add(id);
+            else selectedStoreIds.delete(id);
+            updateMultiSelectUI();
+        }
+
+        function toggleSelectAll(masterCb) {
+            const checkboxes = document.querySelectorAll('.store-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = masterCb.checked;
+                if(masterCb.checked) selectedStoreIds.add(cb.value);
+                else selectedStoreIds.delete(cb.value);
+            });
+            updateMultiSelectUI();
+        }
+
+        function updateMultiSelectUI() {
+            const count = selectedStoreIds.size;
+            document.getElementById('select-count').innerText = count;
+            document.getElementById('select-count-dl').innerText = count;
+            
+            if(count > 0) {
+                document.getElementById('btn-multi-delete').classList.remove('hidden');
+                document.getElementById('btn-multi-download').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-multi-delete').classList.add('hidden');
+                document.getElementById('btn-multi-download').classList.add('hidden');
+            }
+        }
+
+        function deleteSelectedStores() {
+            const ids = Array.from(selectedStoreIds);
+            if(ids.length === 0) return;
+            if(confirm(`Yakin ingin menghapus ${ids.length} data yang dipilih?`)) {
+                fetch(`${API_URL}?action=delete_stores&ids=${encodeURIComponent(JSON.stringify(ids))}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        showIosAlert("Hasil Hapus", data.message);
+                        if(data.success) loadData();
+                    });
+            }
+        }
+
+        // ==========================================
+        // GENERATE QR & MULTI DOWNLOAD (DIPERKECIL & TEXT HITAM)
+        // ==========================================
+        async function showQR(storeId) {
+            const store = allStoresData.find(s => s.id === storeId);
+            if(!store) return;
+            
+            currentActiveStore = store;
+            document.getElementById('modal-qr-title').innerText = `QR: ${store.id}`;
+            
+            const finalUrl = `${BASE_URL}?store=${store.id}`;
+            document.getElementById('qr-url-input').value = finalUrl;
+            
+            const canvas = document.getElementById('qr-canvas');
+            // Render direduksi menjadi 220px agar tidak terlalu besar di layar
+            await renderQRCodeToCanvas(canvas, finalUrl, store.id, 220);
+
+            openModal('modal-qr');
+        }
+
+        // Fungsi RENDER QR 
+        async function renderQRCodeToCanvas(canvas, url, textCode, size = 220) {
             const ctx = canvas.getContext('2d');
+            await QRCode.toCanvas(canvas, url, {
+                width: size,
+                margin: 2,
+                color: { dark: '#000000', light: '#ffffff' },
+                errorCorrectionLevel: 'H' 
+            });
+
             const center = canvas.width / 2;
-            const boxW = 220, boxH = 80, rad = 20;
-            const x = center - (boxW/2), y = center - (boxH/2);
+            // Menyesuaikan ukuran kotak di tengah proporsional dengan QR
+            const boxW = Math.round(size * 0.28); 
+            const boxH = Math.round(size * 0.12);
+            const rad = 6;
             
-            // Kotak putih mulus rounded
+            const x = center - (boxW/2);
+            const y = center - (boxH/2);
+            
+            // Kotak putih melengkung di tengah
             ctx.beginPath();
             ctx.moveTo(x + rad, y); ctx.lineTo(x + boxW - rad, y); ctx.quadraticCurveTo(x + boxW, y, x + boxW, y + rad);
             ctx.lineTo(x + boxW, y + boxH - rad); ctx.quadraticCurveTo(x + boxW, y + boxH, x + boxW - rad, y + boxH);
@@ -500,92 +657,171 @@
             ctx.closePath();
             ctx.fillStyle = '#ffffff'; ctx.fill();
             
-            // Stroke halus abu-abu
-            ctx.lineWidth = 4; ctx.strokeStyle = '#f1f5f9'; ctx.stroke();
+            ctx.lineWidth = 2; ctx.strokeStyle = '#e2e8f0'; ctx.stroke();
             
-            // Teks kode registrasi HITAM PEKAT, font besar tajam
-            ctx.font = 'bold 38px -apple-system, BlinkMacSystemFont, Arial';
-            ctx.fillStyle = '#000000'; // FULL BLACK
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(textId, center, center + 2);
-        }
-
-        async function previewQR(id) {
-            currQR = id;
-            document.getElementById('mdl-qr-title').innerText = `QR: ${id}`;
-            const cvs = document.getElementById('qr-canvas');
-            await drawQR(cvs, id);
-            openModal('mdl-qr');
+            // TULISAN KODE TOKO WARNA HITAM
+            const fontSize = Math.round(size * 0.065);
+            ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, Arial`;
+            ctx.fillStyle = '#000000'; // WARNA HITAM PEKAT
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(textCode, center, center + 1);
         }
 
         function downloadSingleQR() {
+            if(!currentActiveStore) return;
+            const canvas = document.getElementById('qr-canvas');
             const a = document.createElement('a');
-            a.download = `${currQR}_Review.png`;
-            a.href = document.getElementById('qr-canvas').toDataURL('image/png', 1.0);
+            a.download = `${currentActiveStore.id}_QR.png`;
+            a.href = canvas.toDataURL('image/png');
             a.click();
         }
 
-        async function downloadMultiQR() {
-            popAlert("Mengunduh", "Proses render dan unduh batch berjalan...");
-            const arr = Array.from(selectedQRs);
-            for(let id of arr) {
-                const cvs = document.createElement('canvas');
-                await drawQR(cvs, id);
+        async function downloadSelectedQRs() {
+            if (selectedStoreIds.size === 0) return;
+            
+            showIosAlert("Downloading...", `Mempersiapkan ${selectedStoreIds.size} QR Code...`);
+            const items = allStoresData.filter(s => selectedStoreIds.has(s.id));
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const tempCanvas = document.createElement('canvas');
+                
+                const finalUrl = `${BASE_URL}?store=${item.id}`;
+                // Untuk download, buatkan ukuran lebih besar sedikit (300px) agar tidak pecah dicetak
+                await renderQRCodeToCanvas(tempCanvas, finalUrl, item.id, 300);
+                
                 const a = document.createElement('a');
-                a.download = `${id}_Review.png`;
-                a.href = cvs.toDataURL('image/png', 1.0);
+                a.download = `${item.id}_QR.png`;
+                a.href = tempCanvas.toDataURL('image/png');
                 a.click();
+                
                 await new Promise(r => setTimeout(r, 400));
             }
-            closeModal('mdl-alert');
+            closeModal('modal-alert');
         }
 
-        // ==========================================
-        // MODULE: AUDIT LOGS & USERS (ADMIN)
-        // ==========================================
-        function loadLogs() {
-            fetch(`${API_URL}?action=get_logs${getApiExt()}`).then(r=>r.json()).then(res => {
-                const tb = document.getElementById('tb-audit');
-                tb.innerHTML = '';
-                if(!res.data || res.data.length===0) return tb.innerHTML = `<tr><td colspan="5" style="text-align:center;">Belum ada riwayat aktivitas.</td></tr>`;
-                res.data.forEach(x => {
-                    tb.innerHTML += `<tr><td>${x.time}</td><td><strong>${x.user}</strong></td><td><span style="background:#e2e8f0; padding:2px 8px; border-radius:10px; font-size:11px;">${x.role.toUpperCase()}</span></td><td>${x.action}</td><td>${x.detail}</td></tr>`;
-                });
+        function copyUrl() {
+            const input = document.getElementById('qr-url-input');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById('btn-copy');
+                btn.innerText = "Tersalin!";
+                btn.style.background = "#e2e8f0";
+                setTimeout(() => { btn.innerText = "Copy"; btn.style.background = "transparent"; }, 2000);
             });
         }
 
-        function loadUsers() {
-            fetch(`${API_URL}?action=get_users${getApiExt()}`).then(r=>r.json()).then(res => {
-                const tb = document.getElementById('tb-users');
-                tb.innerHTML = '';
-                res.data.forEach(x => {
-                    tb.innerHTML += `<tr><td><strong>${x.user}</strong></td><td>••••••••</td><td>${x.role.toUpperCase()}</td><td style="text-align:right;"><button class="btn btn-danger btn-sm" style="padding:6px 12px;" onclick="delUser('${x.user}')">Cabut Akses</button></td></tr>`;
-                });
-            });
+        // ==========================================
+        // IMPORT CSV & TEMPLATE DOWNLOAD
+        // ==========================================
+        function downloadTemplateCSV() {
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "store_id,store_name,review_url\n"
+                + "T392,Toko Cabang Barat,https://search.google.com/local/writereview?placeid=ChIJ123456\n"
+                + "T393,Toko Cabang Timur,https://search.google.com/local/writereview?placeid=ChIJ789012\n";
+            
+            const encodedUri = encodeURI(csvContent);
+            const a = document.createElement('a');
+            a.setAttribute('href', encodedUri);
+            a.setAttribute('download', 'Template_Import_Toko.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
-        function addUser() {
-            const u = document.getElementById('u-user').value;
-            const p = document.getElementById('u-pass').value;
-            const r = document.getElementById('u-role').value;
-            if(!u||!p) return popAlert("Error", "Harap isi username dan password.");
-            fetch(`${API_URL}?action=add_user&new_user=${u}&new_pass=${p}&new_role=${r}${getApiExt()}`)
-            .then(x=>x.json()).then(res => { popAlert("Info", res.message); if(res.success) { document.getElementById('u-user').value=''; document.getElementById('u-pass').value=''; loadUsers(); } });
+
+        function openImportModal() {
+            document.getElementById('import-file-input').value = '';
+            openModal('modal-import');
         }
-        function delUser(u) {
-            if(!confirm(`Cabut akses sistem untuk staf ${u}?`)) return;
-            fetch(`${API_URL}?action=delete_user&target_user=${u}${getApiExt()}`)
-            .then(x=>x.json()).then(res => { popAlert("Info", res.message); if(res.success) loadUsers(); });
+
+        function processImportFile() {
+            const fileInput = document.getElementById('import-file-input');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return showIosAlert("Peringatan", "Pilih file CSV terlebih dahulu.");
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
+
+                if (lines.length < 2) {
+                    return showIosAlert("Ditolak", "File CSV kosong atau tidak memiliki baris data.");
+                }
+
+                // VALIDASI HEADER
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^["']|["']\$/g, ''));
+                const requiredHeaders = ['store_id', 'store_name', 'review_url'];
+
+                if (!requiredHeaders.every(req => headers.includes(req))) {
+                    return showIosAlert("Format Ditolak", "Header CSV tidak sesuai! Harus berisi: store_id, store_name, review_url.");
+                }
+
+                const idIdx = headers.indexOf('store_id');
+                const nameIdx = headers.indexOf('store_name');
+                const urlIdx = headers.indexOf('review_url');
+
+                const payload = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = parseCSVLine(lines[i]);
+                    if (cols.length >= 3) {
+                        const store_id = cols[idIdx] ? cols[idIdx].trim() : '';
+                        const store_name = cols[nameIdx] ? cols[nameIdx].trim() : '';
+                        const review_url = cols[urlIdx] ? cols[urlIdx].trim() : '';
+
+                        if (store_id && store_name && review_url) {
+                            payload.push({ store_id, store_name, review_url });
+                        }
+                    }
+                }
+
+                if (payload.length === 0) return showIosAlert("Ditolak", "Tidak ada baris data valid untuk diimpor.");
+
+                closeModal('modal-import');
+                showIosAlert("Mengimpor", `Mengirim ${payload.length} data ke database...`);
+
+                fetch(`${API_URL}?action=import_stores&payload=${encodeURIComponent(JSON.stringify(payload))}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        showIosAlert(data.success ? "Berhasil" : "Gagal", data.message);
+                        if(data.success) loadData();
+                    })
+                    .catch(() => showIosAlert("Galat Sistem", "Koneksi ke server terputus."));
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSVLine(text) {
+            let p = '', c = '', r = [];
+            let q = false;
+            for (let i = 0; i < text.length; i++) {
+                c = text[i];
+                if (c === '"') { q = !q; } 
+                else if (c === ',' && !q) { r.push(p.trim().replace(/^["']|["']\$/g, '')); p = ''; } 
+                else { p += c; }
+            }
+            r.push(p.trim().replace(/^["']|["']\$/g, ''));
+            return r;
         }
 
         // ==========================================
-        // UI HELPERS
+        // MODAL HELPERS
         // ==========================================
-        function openModal(id) { document.getElementById(id).classList.add('show'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-        function popAlert(title, msg) {
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showIosAlert(title, msg) {
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = msg;
-            openModal('mdl-alert');
+            openModal('modal-alert');
         }
     </script>
 </body>
